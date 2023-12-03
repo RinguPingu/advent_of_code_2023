@@ -3,7 +3,6 @@ use std::cmp::Ordering;
 
 #[derive(Debug, PartialEq)]
 enum Color {
-    None,
     Red,
     Green,
     Blue,
@@ -77,7 +76,7 @@ fn main() {
                         "red" => Color::Red,
                         "blue" => Color::Blue,
                         "green" => Color::Green,
-                        _ => Color::None,
+                        _ => panic!("INVALID COLOR"),
                     };
                     show.push(Cubes::new(color, amount));
                 }
@@ -93,7 +92,6 @@ fn main() {
                 Color::Red => s.amount > red_constraint,
                 Color::Green => s.amount > green_constraint,
                 Color::Blue => s.amount > blue_constraint,
-                _ => false,
             }) {
                 game.possible = false;
             }
@@ -101,6 +99,39 @@ fn main() {
     }
 
     let part1_result: u32 = games.iter().filter(|g| g.possible).map(|g| g.id).sum();
-
     println!("Part 1 Result: {part1_result}");
+
+    let mut powers: Vec<u32> = Vec::new();
+
+    for game in &games {
+        let mut red: u32 = 0;
+        let mut green: u32 = 0;
+        let mut blue: u32 = 0;
+
+        for show in &game.shows {
+            for cubes in show {
+                match cubes.color {
+                    Color::Red => {
+                        if cubes.amount > red {
+                            red = cubes.amount;
+                        }
+                    }
+                    Color::Green => {
+                        if cubes.amount > green {
+                            green = cubes.amount;
+                        }
+                    }
+                    Color::Blue => {
+                        if cubes.amount > blue {
+                            blue = cubes.amount;
+                        }
+                    }
+                }
+            }
+        }
+        powers.push(red * green * blue);
+    }
+
+    let part2_result: u32 = powers.iter().sum();
+    println!("Part 2 Result: {part2_result}");
 }
