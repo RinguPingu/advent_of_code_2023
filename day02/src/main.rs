@@ -1,14 +1,11 @@
 use lazy_regex::regex_find;
-use std::cmp::Ordering;
 
-#[derive(Debug, PartialEq)]
 enum Color {
     Red,
     Green,
     Blue,
 }
 
-#[derive(Debug)]
 struct Cubes {
     color: Color,
     amount: u32,
@@ -20,19 +17,6 @@ impl Cubes {
     }
 }
 
-impl PartialEq for Cubes {
-    fn eq(&self, other: &Self) -> bool {
-        self.color == other.color && self.amount == other.amount
-    }
-}
-
-impl PartialOrd for Cubes {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.amount.cmp(&other.amount))
-    }
-}
-
-#[derive(Debug)]
 struct Game {
     id: u32,
     shows: Vec<Vec<Cubes>>,
