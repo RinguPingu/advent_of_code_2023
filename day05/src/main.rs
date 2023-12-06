@@ -21,8 +21,9 @@ fn main() {
 
     let part2 = true;
 
-    let mut seeds: Vec<Vec<usize>> = if !part2 {
-        lines
+    let mut seeds: Vec<u32> = Vec::new();
+    if !part2 {
+        seeds = lines
             .next()
             .unwrap()
             .split(':')
@@ -30,10 +31,10 @@ fn main() {
             .get(1)
             .unwrap()
             .split_whitespace()
-            .map(|x| vec![x.parse::<usize>().unwrap()])
+            .flat_map(|x| vec![x.parse::<u32>().unwrap()])
             .collect()
     } else {
-        lines
+        let chunks: Vec<u32> = lines
             .next()
             .unwrap()
             .split(':')
@@ -41,17 +42,18 @@ fn main() {
             .get(1)
             .unwrap()
             .split_whitespace()
-            .map(|x| x.parse::<usize>().unwrap())
-            .collect::<Vec<usize>>();
-        
-            .chunks(2)
-            .map(|c| (*c.first().unwrap()..*c.last().unwrap()).collect::<Vec<usize>>())
-            .collect()
-    };
+            .map(|x| x.parse::<u32>().unwrap())
+            .collect();
 
-    for seed in &seeds {
-        println!("{:?}", seed);
-    }
+        for chunk in chunks.chunks(2) {
+            let first = chunk.first().unwrap();
+            let last = first + chunk.last().unwrap();
+
+            for seed in *first..last {
+                seeds.push(seed);
+            }
+        }
+    };
 
     lines.next();
 
@@ -88,21 +90,19 @@ fn main() {
     for seed in &mut seeds {
         for map in &almanac {
             if let Some(x) = map.iter().find(|r| {
-                (r.source_index..r.source_index + r.range_length).contains(seed.last().unwrap())
+                (r.source_index..r.source_index + r.range_length).contains(&(*seed as usize))
             }) {
                 let number = if x.source_index < x.destination_index {
-                    seed.last().unwrap() + usize::abs_diff(x.destination_index, x.source_index)
+                    *seed + u32::abs_diff(x.destination_index as u32, x.source_index as u32)
                 } else {
-                    seed.last().unwrap() - usize::abs_diff(x.destination_index, x.source_index)
+                    *seed - u32::abs_diff(x.destination_index as u32, x.source_index as u32)
                 };
-                seed.push(number);
-            } else {
-                seed.push(*seed.last().unwrap());
+                *seed = number;
             }
         }
     }
 
-    let part1_result = seeds.iter().map(|s| s.last().unwrap()).min().unwrap();
+    let result = seeds.iter().min().unwrap();
 
-    println!("Part 1 Result: {}", part1_result);
+    println!("Result: {}", result);
 }
