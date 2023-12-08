@@ -1,3 +1,5 @@
+static PART_1: bool = false;
+
 #[derive(Debug, PartialOrd, PartialEq, Eq)]
 enum HandType {
     FiveKind,
@@ -61,7 +63,7 @@ impl Ord for Hand {
 }
 
 fn determine_hand_type(hand: &Hand) -> HandType {
-    let mut card_counts: Vec<(char, u32)> = Vec::new();
+    let mut card_counts: Vec<(char, usize)> = Vec::new();
 
     for card in hand.cards.chars() {
         if let Some(x) = card_counts.iter_mut().find(|cc| cc.0 == card) {
@@ -71,7 +73,26 @@ fn determine_hand_type(hand: &Hand) -> HandType {
         }
     }
 
-    match card_counts.iter().max_by_key(|x| x.1).unwrap().1 {
+    card_counts.sort_by_key(|cc| cc.1);
+
+    let j_count = if PART_1 {
+        0
+    } else {
+        hand.cards.chars().filter(|c| *c == 'J').count()
+    };
+
+    let highest_count: &mut (char, usize) =
+        if card_counts.iter().filter(|cc| cc.1 == j_count).count() > 1 {
+            card_counts
+                .iter_mut()
+                .filter(|cc| cc.0 != 'J')
+                .max_by_key(|x| x.1)
+                .unwrap()
+        } else {
+            card_counts.iter_mut().max_by_key(|x| x.1).unwrap()
+        };
+
+    let hand_type = match highest_count.1 {
         5 => HandType::FiveKind,
         4 => HandType::FourKind,
         3 => {
@@ -89,7 +110,27 @@ fn determine_hand_type(hand: &Hand) -> HandType {
             }
         }
         1 => HandType::HighCard,
-        _ => panic!("Invalid number of the same card!"),
+        other => panic!("Invalid number {} of the same card!", other),
+    };
+
+    if PART_1 || j_count == 0 {
+        hand_type
+    } else {
+        match hand_type {
+            HandType::HighCard => HandType::OnePair,
+            HandType::OnePair => HandType::ThreeKind,
+            HandType::TwoPair => {
+                if j_count == 1 {
+                    HandType::FullHouse
+                } else {
+                    HandType::FourKind
+                }
+            }
+            HandType::ThreeKind => HandType::FourKind,
+            HandType::FullHouse => HandType::FiveKind,
+            HandType::FourKind => HandType::FiveKind,
+            HandType::FiveKind => HandType::FiveKind,
+        }
     }
 }
 
@@ -99,7 +140,13 @@ fn determine_card_value(card: char) -> u32 {
     } else {
         match card {
             'T' => 10,
-            'J' => 11,
+            'J' => {
+                if PART_1 {
+                    11
+                } else {
+                    1
+                }
+            }
             'Q' => 12,
             'K' => 13,
             'A' => 14,
@@ -134,6 +181,13 @@ fn main() {
         .collect();
 
     let winnings: usize = hands_ranks.iter().map(|hr| hr.0.bet as usize * hr.1).sum();
+
+    for hand in hands_ranks
+        .iter()
+        .filter(|h| h.0.cards.chars().any(|c| c == 'J'))
+    {
+        println!("{:?}", hand);
+    }
 
     println!("{}", winnings);
 }
