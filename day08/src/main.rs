@@ -1,4 +1,4 @@
-use core::panic;
+use num::{integer::lcm, Integer};
 use std::{cell::RefCell, rc::Rc};
 
 #[derive(Debug)]
@@ -85,7 +85,6 @@ fn main() {
     let mut it = instructions.chars().cycle();
 
     while current_node.borrow().id != "ZZZ" {
-        println!("{}\t{}", steps, current_node.borrow().id);
         steps += 1;
 
         let next_node = match it.next().unwrap() {
@@ -97,5 +96,29 @@ fn main() {
         current_node = next_node.unwrap();
     }
 
-    println!("Reached ZZZ in {} steps!", steps);
+    let mut current_nodes = nodes
+        .iter()
+        .filter(|n| n.borrow().id.ends_with('A'))
+        .cloned()
+        .collect::<Vec<Rc<RefCell<Node>>>>();
+
+    let mut all_steps: Vec<usize> = Vec::new();
+
+    for mut node in current_nodes {
+        let mut step: usize = 0;
+        while !node.borrow().id.ends_with('Z') {
+            step += 1;
+
+            let next_node = match it.next().unwrap() {
+                'L' => node.borrow().left.clone(),
+                'R' => node.borrow().right.clone(),
+                other => panic!("Instruction was {}", other),
+            };
+
+            node = next_node.unwrap();
+        }
+        all_steps.push(step);
+    }
+    let result = all_steps.iter().cloned().reduce(|a, b| a.lcm(&b)).unwrap();
+    println!("Part 2 Result: {}", result);
 }
