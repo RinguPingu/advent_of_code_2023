@@ -1,4 +1,4 @@
-use num::{integer::lcm, Integer};
+use num::Integer;
 use std::{cell::RefCell, rc::Rc};
 
 #[derive(Debug)]
