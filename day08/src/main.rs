@@ -96,7 +96,7 @@ fn main() {
         current_node = next_node.unwrap();
     }
 
-    let mut current_nodes = nodes
+    let current_nodes = nodes
         .iter()
         .filter(|n| n.borrow().id.ends_with('A'))
         .cloned()
