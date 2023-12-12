@@ -1,7 +1,7 @@
 use grid::Grid;
 
 static PART_1: bool = false;
-static OFFSET: usize = 1000000 - 1;
+static OFFSET: usize = 1000000 + 1;
 
 struct Galaxy {
     position: (usize, usize),
@@ -49,37 +49,60 @@ fn main() {
             let end = galaxies[b].position;
             let mut steps = 0;
             while pos != end {
-                while pos.0 != end.0 {
-                    match pos.0.cmp(&end.0) {
-                        std::cmp::Ordering::Less => pos.0 += 1,
-                        std::cmp::Ordering::Greater => pos.0 -= 1,
-                        std::cmp::Ordering::Equal => (),
-                    }
-                    if empty_rows.contains(&pos.0) {
-                        if PART_1 {
-                            steps += 2;
+                match pos.0.cmp(&end.0) {
+                    std::cmp::Ordering::Less => {
+                        if empty_rows.contains(&pos.0) {
+                            if PART_1 {
+                                steps += 2;
+                            } else {
+                                steps += OFFSET;
+                            }
                         } else {
-                            steps += OFFSET;
+                            steps += 1;
                         }
-                    } else {
-                        steps += 1;
+                        pos.0 += 1;
                     }
+                    std::cmp::Ordering::Greater => {
+                        if empty_rows.contains(&pos.0) {
+                            if PART_1 {
+                                steps += 2;
+                            } else {
+                                steps += OFFSET;
+                            }
+                        } else {
+                            steps += 1;
+                        }
+                        pos.0 -= 1;
+                    }
+                    std::cmp::Ordering::Equal => (),
                 }
-                while pos.1 != end.1 {
-                    match pos.1.cmp(&end.1) {
-                        std::cmp::Ordering::Less => pos.1 += 1,
-                        std::cmp::Ordering::Greater => pos.1 -= 1,
-                        std::cmp::Ordering::Equal => (),
-                    }
-                    if empty_cols.contains(&pos.1) {
-                        if PART_1 {
-                            steps += 2;
+
+                match pos.1.cmp(&end.1) {
+                    std::cmp::Ordering::Less => {
+                        if empty_cols.contains(&pos.1) {
+                            if PART_1 {
+                                steps += 2;
+                            } else {
+                                steps += OFFSET;
+                            }
                         } else {
-                            steps += OFFSET;
+                            steps += 1;
                         }
-                    } else {
-                        steps += 1;
+                        pos.1 += 1;
                     }
+                    std::cmp::Ordering::Greater => {
+                        if empty_cols.contains(&pos.1) {
+                            if PART_1 {
+                                steps += 2;
+                            } else {
+                                steps += OFFSET;
+                            }
+                        } else {
+                            steps += 1;
+                        }
+                        pos.1 -= 1;
+                    }
+                    std::cmp::Ordering::Equal => (),
                 }
             }
             distances.push((vec![galaxies[a].position, galaxies[b].position], steps));
