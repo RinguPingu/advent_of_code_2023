@@ -1,7 +1,7 @@
 use grid::Grid;
 
 static PART_1: bool = false;
-static OFFSET: usize = 1000000 + 1;
+static OFFSET: usize = 1000000;
 
 struct Galaxy {
     position: (usize, usize),
@@ -14,7 +14,7 @@ impl Galaxy {
 }
 
 fn main() {
-    let input = std::fs::read_to_string("./src/input/example_input.txt").expect("Invalid File");
+    let input = std::fs::read_to_string("./src/input/input.txt").expect("Invalid File");
 
     let grid: Grid<char> = Grid::from_vec(
         input.chars().filter(|c| !c.is_whitespace()).collect(),
