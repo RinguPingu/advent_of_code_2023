@@ -1,7 +1,7 @@
 use grid::Grid;
 
 static PART_1: bool = false;
-static PART2_NUM: usize = 1000000 - 1;
+static OFFSET: usize = 1000000 - 1;
 
 struct Galaxy {
     position: (usize, usize),
@@ -49,9 +49,7 @@ fn main() {
             let end = galaxies[b].position;
             let mut steps = 0;
             while pos != end {
-                println!("Moving ROWS");
                 while pos.0 != end.0 {
-                    println!("{}", pos.0);
                     match pos.0.cmp(&end.0) {
                         std::cmp::Ordering::Less => pos.0 += 1,
                         std::cmp::Ordering::Greater => pos.0 -= 1,
@@ -61,15 +59,13 @@ fn main() {
                         if PART_1 {
                             steps += 2;
                         } else {
-                            steps += PART2_NUM;
+                            steps += OFFSET;
                         }
                     } else {
                         steps += 1;
                     }
                 }
-                println!("Moving COLS");
                 while pos.1 != end.1 {
-                    println!("{}", pos.1);
                     match pos.1.cmp(&end.1) {
                         std::cmp::Ordering::Less => pos.1 += 1,
                         std::cmp::Ordering::Greater => pos.1 -= 1,
@@ -79,7 +75,7 @@ fn main() {
                         if PART_1 {
                             steps += 2;
                         } else {
-                            steps += PART2_NUM;
+                            steps += OFFSET;
                         }
                     } else {
                         steps += 1;
